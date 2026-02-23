@@ -1,0 +1,47 @@
+# render.yaml - NGB Terminal için Render Konfigürasyonu
+
+services:
+  - type: web
+    name: ngb-terminal
+    runtime: php
+    region: frankfurt  # veya ohio / singapore / frankfurt
+    plan: free  # free, starter, professional etc.
+    branch: main
+    buildCommand: |
+      echo "NGB Terminal yükleniyor..."
+      mkdir -p logs
+      chmod 777 logs
+      echo "<?php phpinfo(); ?>" > test.php
+    startCommand: php -S 0.0.0.0:$PORT index.php
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: NGB Terminal
+      - key: APP_ENV
+        value: production
+      - key: PHP_VERSION
+        value: 8.2
+      - key: SESSION_SAVE_PATH
+        value: /tmp
+      - key: DISPLAY_ERRORS
+        value: "0"
+      
+  # Otomatik deploy ayarları
+autoDeploy: true
+
+# Disk alanı (opsiyonel)
+disk:
+  name: ngb-data
+  mountPath: /opt/data
+  sizeGB: 1
+
+# Environment değişkenleri
+envVarGroups:
+  - name: ngb-config
+    envVars:
+      - key: SYSTEM_PASS
+        value: "@ngbwayfite"  # Şifre burada da tanımlanabilir
+      - key: LOG_LEVEL
+        value: info
+      - key: SESSION_TIMEOUT
+        value: "3600"
